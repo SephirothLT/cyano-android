@@ -33,6 +33,7 @@
         <activity android:name=".scan.activity.CaremaPermissionActivity" />
         <activity android:name=".scan.activity.ScanWalletLoginActivity" />
         <activity android:name=".scan.activity.ScanWalletInvokeActivity" />
+        <activity android:name=".mine.ExportWalletActivity" />
     </application>
 
 </manifest>

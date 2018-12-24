@@ -251,7 +251,7 @@ public class SDKWrapper {
     }
 
 
-    public static void getSendAddress(final SDKCallback callback, final String Tag, final String data, final String password, final String address) {
+    public static void getSendAddress(final SDKCallback callback, final String tag, final String data, final String password, final String address) {
         Observable.create(new ObservableOnSubscribe<ArrayList<String>>() {
             @Override
             public void subscribe(ObservableEmitter<ArrayList<String>> emitter) throws Exception {
@@ -278,15 +278,15 @@ public class SDKWrapper {
 
             @Override
             public void onNext(ArrayList<String> s) {
-                callback.onSDKSuccess(Tag, s);
+                callback.onSDKSuccess(tag, s);
             }
 
             @Override
             public void onError(Throwable e) {
                 if (e.getMessage() == null) {
-                    callback.onSDKFail(Tag, "");
+                    callback.onSDKFail(tag, "");
                 } else {
-                    callback.onSDKFail(Tag, e.getMessage());
+                    callback.onSDKFail(tag, e.getMessage());
                 }
             }
 
@@ -398,7 +398,7 @@ public class SDKWrapper {
         });
     }
 
-    public static void sendTransactionHex(final SDKCallback callback, final String Tag, final String data) {
+    public static void sendTransactionHex(final SDKCallback callback, final String tag, final String data) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
@@ -419,15 +419,15 @@ public class SDKWrapper {
 
             @Override
             public void onNext(String s) {
-                callback.onSDKSuccess(Tag, s);
+                callback.onSDKSuccess(tag, s);
             }
 
             @Override
             public void onError(Throwable e) {
                 if (e.getMessage() == null) {
-                    callback.onSDKFail(Tag, "");
+                    callback.onSDKFail(tag, "");
                 } else {
-                    callback.onSDKFail(Tag, e.getMessage());
+                    callback.onSDKFail(tag, e.getMessage());
                 }
             }
 
@@ -438,7 +438,7 @@ public class SDKWrapper {
         });
     }
 
-    public static void verifyTX(final SDKCallback callback, final String Tag, final String url) {
+    public static void verifyTX(final SDKCallback callback, final String tag, final String url) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
@@ -480,15 +480,15 @@ public class SDKWrapper {
 
             @Override
             public void onNext(String s) {
-                callback.onSDKSuccess(Tag, s);
+                callback.onSDKSuccess(tag, s);
             }
 
             @Override
             public void onError(Throwable e) {
                 if (e == null) {
-                    callback.onSDKFail(Tag, "");
+                    callback.onSDKFail(tag, "");
                 } else {
-                    callback.onSDKFail(Tag, e.getMessage());
+                    callback.onSDKFail(tag, e.getMessage());
                 }
             }
 
@@ -499,7 +499,7 @@ public class SDKWrapper {
         });
     }
 
-    public static void scanLoginSign(final SDKCallback callback, final String Tag, final String data, final String address, final String password) {
+    public static void scanLoginSign(final SDKCallback callback, final String tag, final String data, final String address, final String password) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
@@ -525,15 +525,15 @@ public class SDKWrapper {
 
             @Override
             public void onNext(String s) {
-                callback.onSDKSuccess(Tag, s);
+                callback.onSDKSuccess(tag, s);
             }
 
             @Override
             public void onError(Throwable e) {
                 if (e.getMessage() == null) {
-                    callback.onSDKFail(Tag, "");
+                    callback.onSDKFail(tag, "");
                 } else {
-                    callback.onSDKFail(Tag, e.getMessage());
+                    callback.onSDKFail(tag, e.getMessage());
                 }
             }
 
@@ -544,7 +544,7 @@ public class SDKWrapper {
         });
     }
 
-    public static void scanAddSign(final SDKCallback callback, final String Tag, final String qrcodeUrl, final String address, final String password) {
+    public static void scanAddSign(final SDKCallback callback, final String tag, final String qrcodeUrl, final String address, final String password) {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
@@ -594,15 +594,15 @@ public class SDKWrapper {
 
             @Override
             public void onNext(String s) {
-                callback.onSDKSuccess(Tag, s);
+                callback.onSDKSuccess(tag, s);
             }
 
             @Override
             public void onError(Throwable e) {
                 if (e.getMessage() == null) {
-                    callback.onSDKFail(Tag, "");
+                    callback.onSDKFail(tag, "");
                 } else {
-                    callback.onSDKFail(Tag, e.getMessage());
+                    callback.onSDKFail(tag, e.getMessage());
                 }
             }
 
@@ -613,4 +613,42 @@ public class SDKWrapper {
         });
     }
 
+    public static void getWalletKey(final SDKCallback callback, final String tag, final String password) {
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                String defaultAddress = SPWrapper.getDefaultAddress();
+                Account account = OntSdk.getInstance().getWalletMgr().getWallet().getAccount(defaultAddress);
+                byte[] salt = account.getSalt();
+                SignatureScheme scheme = OntSdk.getInstance().getWalletMgr().getSignatureScheme();
+                String gcmDecodedPrivateKey = com.github.ontio.account.Account.getGcmDecodedPrivateKey(account.key, password, defaultAddress, salt, 4096, scheme);
+                emitter.onNext(gcmDecodedPrivateKey);
+                emitter.onComplete();
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+                callback.onSDKSuccess(tag, s);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (e.getMessage() != null) {
+                    callback.onSDKFail(tag, e.getMessage());
+                } else {
+                    callback.onSDKFail(tag, "");
+                }
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
 }

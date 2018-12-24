@@ -99,7 +99,7 @@ public class WalletFragment extends BaseFragment implements View.OnClickListener
                 startActivity(new Intent(baseActivity, SendWalletActivity.class));
                 break;
             case R.id.btn_receiver:
-                copyAddress();
+                baseActivity.copyAddress(SPWrapper.getDefaultAddress(), "Your wallet address has been copied");
                 break;
             case R.id.btn_record:
                 Intent intent = new Intent(baseActivity, WebActivity.class);
@@ -111,16 +111,6 @@ public class WalletFragment extends BaseFragment implements View.OnClickListener
                 break;
             default:
         }
-    }
-
-    private void copyAddress() {
-        // Gets a handle to the clipboard service.
-        ClipboardManager clipboard = (ClipboardManager) baseActivity.getSystemService(Context.CLIPBOARD_SERVICE);
-        // Creates a new text clip to put on the clipboard
-        ClipData clip = ClipData.newPlainText("key", SPWrapper.getDefaultAddress());
-        // Set the clipboard's primary clip.
-        clipboard.setPrimaryClip(clip);
-        baseActivity.showAttention("Your wallet address has been copied");
     }
 
     @Override

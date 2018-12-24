@@ -2,6 +2,9 @@ package com.github.ont.cyanowallet.base;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,14 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.ont.cyanowallet.R;
+import com.github.ont.cyanowallet.utils.ToastUtil;
+import com.github.ont.cyanowallet.view.PasswordDialog;
 
 public class BaseActivity extends AppCompatActivity {
     public static final String TAG = "BaseActivity";
 
     private Dialog loadingDialog;
     public Activity baseActivity;
+    private PasswordDialog passwordDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -154,9 +161,59 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    private GetDialogPassword getDialogPassword;
+
+    public void setGetDialogPwd(GetDialogPassword getDialogPwd) {
+        this.getDialogPassword = getDialogPwd;
+    }
+
+    //显示付款
+    public void showPasswordDialog() {
+        if (getDialogPassword == null) {
+            ToastUtil.showToast(baseActivity, "System error ,Please restart");
+            return;
+        }
+        if (passwordDialog != null && passwordDialog.isShowing()) {
+            return;
+        }
+        passwordDialog = new PasswordDialog(this);
+        passwordDialog.setConfirmListener(new PasswordDialog.ConfirmListener() {
+            @Override
+            public void passwordConfirm(String password) {
+                passwordDialog.dismiss();
+                if (getDialogPassword != null) {
+                    getDialogPassword.handleDialog(password);
+                }
+            }
+        });
+        passwordDialog.show();
+    }
+
+    //隐藏付款
+    public void dismissPwdDialog() {
+        if (passwordDialog != null) {
+            passwordDialog.dismiss();
+        }
+    }
+
+    public interface GetDialogPassword {
+        public void handleDialog(String pwd);
+    }
+
+    public void copyAddress(String data, String des) {
+        // Gets a handle to the clipboard service.
+        ClipboardManager clipboard = (ClipboardManager) baseActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        // Creates a new text clip to put on the clipboard
+        ClipData clip = ClipData.newPlainText("key", data);
+        // Set the clipboard's primary clip.
+        clipboard.setPrimaryClip(clip);
+        showAttention(des);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         dismissLoading();
+        dismissPwdDialog();
     }
 }

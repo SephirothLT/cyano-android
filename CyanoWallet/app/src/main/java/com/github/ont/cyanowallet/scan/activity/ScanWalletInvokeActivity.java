@@ -37,6 +37,7 @@ import com.github.ont.cyanowallet.utils.SDKWrapper;
 import com.github.ont.cyanowallet.utils.SettingSingleton;
 import com.github.ont.cyanowallet.utils.ToastUtil;
 import com.github.ont.cyanowallet.view.PasswordDialog;
+import com.github.ontio.common.Common;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -177,19 +178,25 @@ public class ScanWalletInvokeActivity extends BaseActivity implements View.OnCli
             for (int i = 0; i < notify.size(); i++) {
                 JSONArray states = notify.getJSONObject(i).getJSONArray("States");
                 String contractAddress = notify.getJSONObject(i).getString("ContractAddress");
-                if (TextUtils.equals(states.getString(0), "transfer") && TextUtils.equals(states.getString(1), address)) {
-                    if (TextUtils.equals(contractAddress.substring(0, 2), "01")) {
-                        tv_pay.setText(String.format("%s ONT", states.getLong(3)));
-                        tvContent.setText(states.getString(2));
-                        tv_address_from.setText(address);
-                    } else if (TextUtils.equals(contractAddress.substring(0, 2), "02")) {
-                        tv_pay.setText(String.format("%s ONG", CommonUtil.formatONG(states.getLong(3) + "")));
-                        tvContent.setText(states.getString(2));
-                        tv_address_from.setText(address);
+                if (states.size() > 3) {
+                    if (TextUtils.equals(states.getString(0), "transfer") && TextUtils.equals(states.getString(1), address)) {
+                        if (TextUtils.equals(contractAddress, Constant.ONT_CONTRACT)) {
+                            tv_pay.setText(String.format("%s ONT", states.getLong(3)));
+                            tvContent.setText(states.getString(2));
+                            tv_address_from.setText(address);
+                        } else if (TextUtils.equals(contractAddress, Constant.ONG_CONTRACT)) {
+                            tv_pay.setText(String.format("%s ONG", CommonUtil.formatONG(states.getLong(3) + "")));
+                            tvContent.setText(states.getString(2));
+                            tv_address_from.setText(address);
+                        }
                     }
                 }
             }
-
+        }
+        if (TextUtils.isEmpty(tv_address_from.getText().toString())) {
+            showLoading();
+            sendTran(transactionHex);
+            return;
         }
         TextView tvSure = (TextView) inflate.findViewById(R.id.tv_sure);
         TextView tvCancel = (TextView) inflate.findViewById(R.id.tv_cancel);

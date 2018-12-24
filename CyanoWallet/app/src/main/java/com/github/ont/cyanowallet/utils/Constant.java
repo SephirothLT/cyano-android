@@ -20,4 +20,7 @@ public class Constant {
 
     public static final String ONT = "ont";
     public static final String ONG = "ong";
+
+    public static final String ONT_CONTRACT = "0100000000000000000000000000000000000000";
+    public static final String ONG_CONTRACT = "0200000000000000000000000000000000000000";
 }

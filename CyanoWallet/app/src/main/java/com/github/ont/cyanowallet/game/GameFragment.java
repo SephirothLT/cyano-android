@@ -85,10 +85,10 @@ public class GameFragment extends BaseFragment {
                 baseActivity.dismissLoading();
                 if (result.isSuccess) {
                     GameListBean gameListBean = JSONObject.parseObject((String) result.info, GameListBean.class);
-                    final List<GameListBean.ResultBean.AppsBean> apps = gameListBean.getResult().getApps();
+                    final List<GameListBean.ResultBean.BannerBean> banners = gameListBean.getResult().getBanner();
                     ArrayList<String> appIcons = new ArrayList<>();
-                    for (GameListBean.ResultBean.AppsBean bean : apps) {
-                        appIcons.add(bean.getIcon());
+                    for (GameListBean.ResultBean.BannerBean bean : banners) {
+                        appIcons.add(bean.getImage());
                     }
                     //设置图片集合
                     banner.setImages(appIcons);
@@ -97,16 +97,17 @@ public class GameFragment extends BaseFragment {
                         @Override
                         public void OnBannerClick(int position) {
                             Intent intent = new Intent(baseActivity, GameWebActivity.class);
-                            intent.putExtra(Constant.KEY, apps.get(position).getLink());
+                            intent.putExtra(Constant.KEY, banners.get(position).getLink());
                             startActivity(intent);
                         }
                     });
                     banner.start();
 
                     //小列表
-                    List<GameListBean.ResultBean.BannerBean> banners = gameListBean.getResult().getBanner();
+                    final List<GameListBean.ResultBean.AppsBean> apps = gameListBean.getResult().getApps();
+
                     recyclerView.setLayoutManager(new GridLayoutManager(baseActivity, 4));
-                    RecycleImageAdapter adapter = new RecycleImageAdapter(baseActivity, banners);
+                    RecycleImageAdapter adapter = new RecycleImageAdapter(baseActivity, apps);
                     recyclerView.setAdapter(adapter);
                     adapter.setOnItemClickListern(new RecycleImageAdapter.OnItemClick() {
                         @Override

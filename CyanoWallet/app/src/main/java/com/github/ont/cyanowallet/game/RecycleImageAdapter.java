@@ -18,10 +18,10 @@ import java.util.List;
 
 public class RecycleImageAdapter extends RecyclerView.Adapter<RecycleImageAdapter.ImageViewHolder> {
     private Activity mActivity;
-    private List<GameListBean.ResultBean.BannerBean> bannerBeans;
+    private List<GameListBean.ResultBean.AppsBean> bannerBeans;
     private OnItemClick onItemClick;
 
-    public RecycleImageAdapter(Activity mActivity, List<GameListBean.ResultBean.BannerBean> bannerBeans) {
+    public RecycleImageAdapter(Activity mActivity, List<GameListBean.ResultBean.AppsBean> bannerBeans) {
         this.mActivity = mActivity;
         this.bannerBeans = bannerBeans;
     }
@@ -43,8 +43,8 @@ public class RecycleImageAdapter extends RecyclerView.Adapter<RecycleImageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder imageViewHolder, int i) {
-        GameListBean.ResultBean.BannerBean bean = bannerBeans.get(i);
-        Glide.with(mActivity).load(bean.getImage()).into(imageViewHolder.img);
+        GameListBean.ResultBean.AppsBean bean = bannerBeans.get(i);
+        Glide.with(mActivity).load(bean.getIcon()).into(imageViewHolder.img);
         imageViewHolder.tvName.setText(bean.getName());
     }
 
